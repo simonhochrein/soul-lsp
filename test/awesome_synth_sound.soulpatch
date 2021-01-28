@@ -1,0 +1,27 @@
+{
+  "soulPatchV1": {
+    "ID": "com.mycompany.sounds.awesome_synth_sound_34",
+    "version": "1.0",
+    "name": "Awesome Synth Sound 34",
+    "description": "This is an awesome sound",
+    "category": "synth",
+    "manufacturer": "The Cool Synth Company Inc",
+    "icon": "AwesomeSoundIcon.svg",
+    "website": "https://mycoolsynthcompany.com",
+    "isInstrument": true,
+    "source": [
+      "AwesomeSound34.soul",
+      "SomeSharedLibraryCode.soul"
+    ],
+    "externals": {
+      "SampleSet::kickdrum": "sounds/kick1.ogg",
+      "SampleSet::hihat": "sounds/hihat.flac",
+      "SampleSet::bass": "sounds/bass.wav",
+      "SampleSet::crash": "sounds/crash22.wav"
+    },
+    "view": [
+      "AwesomeGUI.js",
+      "AwesomeGUI.faceplate"
+    ]
+  }
+}

@@ -5,7 +5,7 @@ const vscode_1 = require("vscode");
 const node_1 = require("vscode-languageclient/node");
 let client;
 function activate(context) {
-    let serverExecutable = "../build/parser"; // TODO: move this to configuration file
+    let serverExecutable = "../build/soul-lsp"; // TODO: move this to configuration file
     let debugOptions = { execArgv: [] };
     let serverOptions = {
         run: { command: serverExecutable, args: [], options: {} },

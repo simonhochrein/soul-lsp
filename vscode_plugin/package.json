@@ -10,11 +10,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:plaintext"
+    "onLanguage:plaintext",
+    "onLanguage:json",
+    "workspaceContains:package.json"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
+      {
+        "id": "json",
+        "extensions": [
+          ".soulpatch"
+        ]
+      },
       {
         "id": "soul",
         "aliases": [
@@ -33,6 +41,12 @@
         "language": "soul",
         "scopeName": "source.soul",
         "path": "./syntaxes/soul.tmLanguage.json"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "*.soulpatch",
+        "url": "./schema/soulpatch.json"
       }
     ]
   },

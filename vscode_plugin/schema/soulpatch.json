@@ -1,0 +1,128 @@
+{
+  "$id": "soulpatch.json",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "default": {},
+  "description": "The root schema comprises the entire JSON document.",
+  "examples": [
+    {
+      "soulPatchV1": {
+        "ID": "dev.soul.examples.example",
+        "version": "1.0",
+        "name": "Example",
+        "description": "Example Description",
+        "category": "fx",
+        "manufacturer": "Example Manufacturer",
+        "isInstrument": false,
+        "source": "Example.soul"
+      }
+    }
+  ],
+  "required": ["soulPatchV1"],
+  "title": "The root schema",
+  "type": "object",
+  "properties": {
+    "soulPatchV1": {
+      "$id": "#/properties/soulPatchV1",
+      "default": {},
+      "description": "Root for soulpatch configuration",
+      "required": [
+        "ID",
+        "version",
+        "name",
+        "description",
+        "category",
+        "manufacturer",
+        "isInstrument",
+        "source"
+      ],
+      "title": "The soulPatchV1 schema",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "$id": "#/properties/soulPatchV1/properties/ID",
+          "type": "string",
+          "title": "Plugin ID",
+          "description": "The ID of your plugin",
+          "default": ""
+        },
+        "version": {
+          "$id": "#/properties/soulPatchV1/properties/version",
+          "type": "string",
+          "title": "The version schema",
+          "description": "The version of your plugin",
+          "default": "1.0"
+        },
+        "name": {
+          "$id": "#/properties/soulPatchV1/properties/name",
+          "type": "string",
+          "title": "Plugin Name",
+          "description": "The name of your plugin",
+          "default": ""
+        },
+        "description": {
+          "$id": "#/properties/soulPatchV1/properties/description",
+          "type": "string",
+          "title": "Plugin Description",
+          "description": "The description of your plugin",
+          "default": ""
+        },
+        "category": {
+          "$id": "#/properties/soulPatchV1/properties/category",
+          "type": "string",
+          "title": "Plugin Category",
+          "description": "The category of your plugin",
+          "default": ""
+        },
+        "manufacturer": {
+          "$id": "#/properties/soulPatchV1/properties/manufacturer",
+          "type": "string",
+          "title": "Plugin Manufacturer",
+          "description": "Your business name",
+          "default": ""
+        },
+        "website": {
+          "$id": "#/properties/soulPatchV1/properties/website",
+          "type": "string",
+          "title": "Plugin Website",
+          "description": "The website URL for your plugin",
+          "default": ""
+        },
+        "icon": {
+          "$id": "#/properties/soulPatchV1/properties/icon",
+          "type": "string",
+          "title": "Plugin Icon",
+          "description": "The icon of your plugin",
+          "default": ""
+        },
+        "isInstrument": {
+          "$id": "#/properties/soulPatchV1/properties/isInstrument",
+          "type": "boolean",
+          "title": "Plugin Type",
+          "description": "True if instrument, false if effect",
+          "default": false
+        },
+        "source": {
+          "$id": "#/properties/soulPatchV1/properties/source",
+          "default": "",
+          "description": "Can be array or single string",
+          "title": "Plugin Source File or Files",
+          "type": ["string", "array"]
+        },
+        "externals": {
+          "$id": "#/properties/soulPatchV1/properties/externals",
+          "default": "",
+          "description": "Provides external variable bindings to your plugin",
+          "title": "External Variable Bindings",
+          "type": ["object"]
+        },
+        "view": {
+          "$id": "#/properties/soulPatchV1/properties/view",
+          "default": "",
+          "description": "Optional view or views for plugin",
+          "title": "Plugin View or Views",
+          "type": ["string", "array"]
+        }
+      }
+    }
+  }
+}
