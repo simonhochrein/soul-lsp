@@ -1,0 +1,55 @@
+{
+  "name": "soul",
+  "displayName": "soul",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.52.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:plaintext"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "soul",
+        "aliases": [
+          "SOUL",
+          "soul"
+        ],
+        "extensions": [
+          ".soul",
+          ".soultest"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "soul",
+        "scopeName": "source.soul",
+        "path": "./syntaxes/soul.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.52.0",
+    "glob": "^7.1.6",
+    "typescript": "^4.1.2",
+    "vscode-test": "^1.4.1"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^7.0.0"
+  }
+}

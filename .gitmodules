@@ -1,0 +1,3 @@
+[submodule "vendor/SOUL"]
+	path = vendor/SOUL
+	url = https://github.com/soul-lang/SOUL
