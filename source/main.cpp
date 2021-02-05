@@ -22,7 +22,7 @@ int main(int argc, char **argv)
                 int length = atoi(lengthString.data());
 
                 char *buffer = new char[length + 1];
-                bzero(buffer, length + 1);
+                memset(buffer, 0, length + 1);
                 std::cin.read(buffer, length);
 
                 auto json = nlohmann::json::parse(buffer);
