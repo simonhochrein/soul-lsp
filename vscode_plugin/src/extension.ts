@@ -4,6 +4,7 @@ import {
   LanguageClient,
   LanguageClientOptions,
   ServerOptions,
+  Trace,
 } from "vscode-languageclient/node";
 
 let client: LanguageClient;

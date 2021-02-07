@@ -6,9 +6,12 @@ Language Server for [SOUL](http://github.com/soul-lang/SOUL)
 
 ## Features Planned:
 
-- completion
 - go to definition
 - hover
+
+## Features in Development
+
+- completion (keyword completion is functional, more soon)
 
 ## Features Implemented:
 

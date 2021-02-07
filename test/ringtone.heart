@@ -1,0 +1,797 @@
+#SOUL 1
+
+processor _root::ClassicRingtone
+{
+  output  out                 stream  float32;
+
+  var float32 $sinewavePhase;
+
+  function run() -> void
+  {
+    @block_0:
+      let $pitches = int32[13] { 76, 74, 66, 68, 73, 71, 62, 64, 71, 69, 61, 64, 69 };
+      let $durations = int32[13] { 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 4 };
+      $i = wrap<13> 0;
+      $counter_0 = 0;
+      branch @loop_0;
+    @loop_0:
+      branch_if lessThan ($counter_0, 13) ? @body_0 : @break_0;
+    @body_0:
+      $i = cast wrap<13> ($counter_0);
+      let $_inlined_playNote_param_pitch = $pitches[$i];
+      let $_inlined_playNote_param_lengthInQuarterNotes = $durations[$i];
+      let $_inlined_playNote_samplesPerQuarterNote = cast int32 (cast int32 (divide (processor.frequency, 7.0)));
+      let $0 = call _root::soul::noteNumberToFrequency ($_inlined_playNote_param_pitch);
+      let $_inlined_playNote_noteFrequency = cast float32 ($0);
+      let $_inlined_playNote_noteLength = multiply ($_inlined_playNote_samplesPerQuarterNote, cast int32 ($_inlined_playNote_param_lengthInQuarterNotes));
+      let $_inlined_playNote_phaseIncrement = cast float32 (cast float32 (multiply (multiply (cast float64 ($_inlined_playNote_noteFrequency), 6.283185307179586), processor.period)));
+      $_inlined_playNote_counter_0 = $_inlined_playNote_noteLength;
+      branch @_inlined_playNote_1;
+    @_inlined_playNote_1:
+      branch_if greaterThan ($_inlined_playNote_counter_0, 0) ? @_inlined_playNote_2 : @cont_0;
+    @_inlined_playNote_2:
+      let $1 = call _root::soul::intrinsics::_sin_specialised ($sinewavePhase);
+      write out multiply (0.1f, $1);
+      let $2 = call _root::soul::intrinsics::_addModulo2Pi_specialised ($sinewavePhase, cast float32 ($_inlined_playNote_phaseIncrement));
+      $sinewavePhase = $2;
+      advance;
+      $_inlined_playNote_counter_0 = subtract ($_inlined_playNote_counter_0, 1);
+      branch @_inlined_playNote_1;
+    @cont_0:
+      $counter_0 = add ($counter_0, 1);
+      branch @loop_0;
+    @break_0:
+      return;
+  }
+
+}
+
+namespace _root::soul
+{
+
+  function dBtoGain (float32 $decibels) -> float32
+  {
+    @block_0:
+      branch_if greaterThan ($decibels, -100.0f) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = call _root::soul::intrinsics::_pow_specialised (10.0f, multiply ($decibels, 0.05f));
+      branch @ternary_end_0 ($0);
+    @ternary_false_0:
+      let $1 = 0.0f;
+      branch @ternary_end_0 ($1);
+    @ternary_end_0 (float32 $_T0):
+      let $2 = $_T0;
+      return $2;
+  }
+
+  function dBtoGain_2 (float64 $decibels) -> float64
+  {
+    @block_0:
+      branch_if greaterThan ($decibels, -100.0) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = call _root::soul::intrinsics::_pow_specialised_2 (10.0, multiply ($decibels, 0.05));
+      branch @ternary_end_0 ($0);
+    @ternary_false_0:
+      let $1 = 0.0;
+      branch @ternary_end_0 ($1);
+    @ternary_end_0 (float64 $_T0):
+      let $2 = $_T0;
+      return $2;
+  }
+
+  function gainTodB (float32 $gain) -> float32
+  {
+    @block_0:
+      branch_if greaterThan ($gain, 0.0f) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = call _root::soul::intrinsics::_log10_specialised ($gain);
+      let $1 = multiply ($0, 20.0f);
+      branch @ternary_end_0 ($1);
+    @ternary_false_0:
+      let $2 = -100.0f;
+      branch @ternary_end_0 ($2);
+    @ternary_end_0 (float32 $_T0):
+      let $3 = $_T0;
+      return $3;
+  }
+
+  function gainTodB_2 (float64 $gain) -> float64
+  {
+    @block_0:
+      branch_if greaterThan ($gain, 0.0) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = call _root::soul::intrinsics::_log10_specialised_2 ($gain);
+      let $1 = multiply ($0, 20.0);
+      branch @ternary_end_0 ($1);
+    @ternary_false_0:
+      let $2 = -100.0;
+      branch @ternary_end_0 ($2);
+    @ternary_end_0 (float64 $_T0):
+      let $3 = $_T0;
+      return $3;
+  }
+
+  function noteNumberToFrequency (int32 $note) -> float32
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_pow_specialised (2.0f, multiply (cast float32 (subtract ($note, 69)), 0.083333336f));
+      return multiply (440.0f, $0);
+  }
+
+  function noteNumberToFrequency_2 (float32 $note) -> float32
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_pow_specialised (2.0f, multiply (subtract ($note, 69.0f), 0.083333336f));
+      return multiply (440.0f, $0);
+  }
+
+  function frequencyToNoteNumber (float32 $frequency) -> float32
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_log_specialised (multiply ($frequency, 0.0022727272f));
+      return add (69.0f, multiply (17.31234f, $0));
+  }
+
+  function getSpeedRatioForPitchedSample (float64 $sourceSampleRate, float32 $sourceMIDINote, float64 $targetSampleRate, float32 $targetMIDINote) -> float64
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_pow_specialised (2.0f, multiply ($targetMIDINote, 0.083333336f));
+      let $1 = call _root::soul::intrinsics::_pow_specialised (2.0f, multiply ($sourceMIDINote, 0.083333336f));
+      return divide (multiply ($sourceSampleRate, cast float64 ($0)), multiply ($targetSampleRate, cast float64 ($1)));
+  }
+
+  function tau2pole (float64 $t60, float64 $sampleRate) -> float64
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_pow_specialised_2 (0.001, divide (1.0, multiply ($t60, $sampleRate)));
+      return $0;
+  }
+
+  function tau2pole_2 (float32 $t60, float32 $sampleRate) -> float32
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_pow_specialised (0.001f, divide (1.0f, multiply ($t60, $sampleRate)));
+      return $0;
+  }
+
+  function pole2tau (float64 $pole, float64 $sampleRate) -> float64
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_log_specialised_2 ($pole);
+      return divide (-1.0, multiply ($0, $sampleRate));
+  }
+
+  function pole2tau_2 (float32 $pole, float32 $sampleRate) -> float32
+  {
+    @block_0:
+      let $0 = call _root::soul::intrinsics::_log_specialised ($pole);
+      return divide (-1.0f, multiply ($0, $sampleRate));
+  }
+
+}
+
+namespace _root::soul::intrinsics
+{
+
+  function min (int32 $a, int32 $b) -> int32 [[ intrin: "min" ]]
+  {
+    @block_0:
+      branch_if lessThan ($a, $b) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = $a;
+      branch @ternary_end_0 ($0);
+    @ternary_false_0:
+      let $1 = $b;
+      branch @ternary_end_0 ($1);
+    @ternary_end_0 (int32 $_T0):
+      let $2 = $_T0;
+      return $2;
+  }
+
+  function wrap (int32 $n, int32 $range) -> int32 [[ intrin: "wrap" ]]
+  {
+    @block_0:
+      branch_if equals ($range, 0) ? @if_0 : @ifnot_0;
+    @if_0:
+      return 0;
+    @ifnot_0:
+      let $x = cast int32 (modulo ($n, $range));
+      branch_if lessThan ($x, 0) ? @if_1 : @ifnot_1;
+    @if_1:
+      return cast int32 (add ($x, cast int32 ($range)));
+    @ifnot_1:
+      return cast int32 ($x);
+  }
+
+  function roundToInt (float32 $n) -> int32 [[ intrin: "roundToInt" ]]
+  {
+    @block_0:
+      branch_if lessThan ($n, 0.0f) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = -0.5f;
+      branch @ternary_end_0 ($0);
+    @ternary_false_0:
+      let $1 = 0.5f;
+      branch @ternary_end_0 ($1);
+    @ternary_end_0 (float32 $_T0):
+      let $2 = $_T0;
+      return cast int32 (add ($n, $2));
+  }
+
+  function roundToInt_2 (float64 $n) -> int64 [[ intrin: "roundToInt" ]]
+  {
+    @block_0:
+      branch_if lessThan ($n, 0.0) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = -0.5;
+      branch @ternary_end_0 ($0);
+    @ternary_false_0:
+      let $1 = 0.5;
+      branch @ternary_end_0 ($1);
+    @ternary_end_0 (float64 $_T0):
+      let $2 = $_T0;
+      return cast int64 (add ($n, $2));
+  }
+
+  function _pow_specialised (float32 $a, float32 $b) -> float32 [[ intrin: "pow" ]]
+  {
+    @block_0:
+      return 0.0f;
+  }
+
+  function _pow_specialised_2 (float64 $a, float64 $b) -> float64 [[ intrin: "pow" ]]
+  {
+    @block_0:
+      return 0.0;
+  }
+
+  function _log10_specialised (float32 $n) -> float32 [[ intrin: "log10" ]]
+  {
+    @block_0:
+      return 0.0f;
+  }
+
+  function _log10_specialised_2 (float64 $n) -> float64 [[ intrin: "log10" ]]
+  {
+    @block_0:
+      return 0.0;
+  }
+
+  function _log_specialised (float32 $n) -> float32 [[ intrin: "log" ]]
+  {
+    @block_0:
+      return 0.0f;
+  }
+
+  function _log_specialised_2 (float64 $n) -> float64 [[ intrin: "log" ]]
+  {
+    @block_0:
+      return 0.0;
+  }
+
+  function _sin_specialised (float32 $n) -> float32 [[ intrin: "sin" ]]
+  {
+    @block_0:
+      return 0.0f;
+  }
+
+  function _sqrt_specialised (float64 $n) -> float64 [[ intrin: "sqrt" ]]
+  {
+    @block_0:
+      return 0.0;
+  }
+
+  function _addModulo2Pi_specialised (float32 $value, float32 $increment) -> float32 [[ intrin: "addModulo2Pi" ]]
+  {
+    @block_0:
+      $value = add ($value, $increment);
+      branch_if greaterThanOrEqual ($value, 6.2831855f) ? @if_0 : @ifnot_0;
+    @if_0:
+      branch_if greaterThanOrEqual ($value, 12.566371f) ? @if_1 : @ifnot_1;
+    @if_1:
+      return modulo ($value, 6.2831855f);
+    @ifnot_1:
+      return subtract ($value, 6.2831855f);
+    @ifnot_0:
+      branch_if lessThan ($value, 0.0f) ? @ternary_true_2 : @ternary_false_2;
+    @ternary_true_2:
+      let $0 = add (modulo ($value, 6.2831855f), 6.2831855f);
+      branch @ternary_end_2 ($0);
+    @ternary_false_2:
+      let $1 = $value;
+      branch @ternary_end_2 ($1);
+    @ternary_end_2 (float32 $_T2):
+      let $2 = $_T2;
+      return $2;
+  }
+
+}
+
+namespace _root::soul::intrinsics::helpers
+{
+
+}
+
+namespace _root::soul::audio_samples
+{
+
+  struct Mono
+  {
+    float32[]  frames;
+    float64    sampleRate;
+  }
+
+  struct Stereo
+  {
+    float32<2>[]  frames;
+    float64       sampleRate;
+  }
+
+}
+
+namespace _root::soul::pan_law
+{
+
+  function linear (float32 $pan) -> float32<2>
+  {
+    @block_0:
+      $0 = float32<2> {};
+      $0[0] = subtract (1.0f, $pan);
+      $0[1] = add (1.0f, $pan);
+      return $0;
+  }
+
+  function centre3dB (float32 $pan) -> float32<2>
+  {
+    @block_0:
+      $0 = float32<2> {};
+      let $1 = call _root::soul::intrinsics::_sin_specialised (multiply (subtract (1.0f, $pan), 0.7853982f));
+      $0[0] = $1;
+      let $2 = call _root::soul::intrinsics::_sin_specialised (multiply (add (1.0f, $pan), 0.7853982f));
+      $0[1] = $2;
+      return $0;
+  }
+
+}
+
+namespace _root::soul::midi
+{
+
+  struct Message
+  {
+    int32  midiBytes;
+  }
+
+  function getByte1 (Message $m) -> int32
+  {
+    @block_0:
+      return bitwiseAnd (rightShift ($m.midiBytes, 16), 255);
+  }
+
+  function getByte2 (Message $m) -> int32
+  {
+    @block_0:
+      return bitwiseAnd (rightShift ($m.midiBytes, 8), 255);
+  }
+
+  function getByte3 (Message $m) -> int32
+  {
+    @block_0:
+      return bitwiseAnd ($m.midiBytes, 255);
+  }
+
+}
+
+processor _root::soul::midi::MPEParser [[ main: false ]]
+{
+  input   parseMIDI           event   soul::midi::Message;
+  output  eventOut            event   (soul::note_events::NoteOn, soul::note_events::NoteOff, soul::note_events::PitchBend, soul::note_events::Pressure, soul::note_events::Slide, soul::note_events::Control);
+
+  event _parseMIDI_struct_Message (soul::midi::Message $message)
+  {
+    @block_0:
+      let $0 = call _root::soul::midi::getByte1 ($message);
+      let $messageByte1 = cast int32 ($0);
+      let $1 = call _root::soul::midi::getByte2 ($message);
+      let $messageByte2 = cast int32 ($1);
+      let $2 = call _root::soul::midi::getByte3 ($message);
+      let $messageByte3 = cast int32 ($2);
+      let $messageType = cast int32 (bitwiseAnd (cast int32 ($messageByte1), 240));
+      let $channel = cast int32 (bitwiseAnd (cast int32 ($messageByte1), 15));
+      branch_if equals ($messageType, 128) ? @if_0 : @ifnot_0;
+    @if_0:
+      $3 = soul::note_events::NoteOff {};
+      $3.channel = cast int32 ($channel);
+      $3.note = cast float32 ($messageByte2);
+      let $4 = call normaliseValue (cast int32 ($messageByte3));
+      $3.velocity = $4;
+      write eventOut $3;
+      branch @ifend_0;
+    @ifnot_0:
+      branch_if equals ($messageType, 144) ? @if_1 : @ifnot_1;
+    @if_1:
+      branch_if equals ($messageByte3, 0) ? @if_2 : @ifnot_2;
+    @if_2:
+      $5 = soul::note_events::NoteOff {};
+      $5.channel = cast int32 ($channel);
+      $5.note = cast float32 ($messageByte2);
+      write eventOut $5;
+      branch @ifend_0;
+    @ifnot_2:
+      $6 = soul::note_events::NoteOn {};
+      $6.channel = cast int32 ($channel);
+      $6.note = cast float32 ($messageByte2);
+      let $7 = call normaliseValue (cast int32 ($messageByte3));
+      $6.velocity = $7;
+      write eventOut $6;
+      branch @ifend_0;
+    @ifnot_1:
+      branch_if equals ($messageType, 176) ? @if_3 : @ifnot_3;
+    @if_3:
+      branch_if equals ($messageByte2, 74) ? @if_4 : @ifnot_4;
+    @if_4:
+      $8 = soul::note_events::Slide {};
+      $8.channel = cast int32 ($channel);
+      let $9 = call normaliseValue (cast int32 ($messageByte3));
+      $8.slide = $9;
+      write eventOut $8;
+      branch @ifend_0;
+    @ifnot_4:
+      $10 = soul::note_events::Control {};
+      $10.channel = cast int32 ($channel);
+      $10.control = cast int32 ($messageByte2);
+      let $11 = call normaliseValue (cast int32 ($messageByte3));
+      $10.value = $11;
+      write eventOut $10;
+      branch @ifend_0;
+    @ifnot_3:
+      branch_if equals ($messageType, 208) ? @if_5 : @ifnot_5;
+    @if_5:
+      $12 = soul::note_events::Pressure {};
+      $12.channel = cast int32 ($channel);
+      let $13 = call normaliseValue (cast int32 ($messageByte2));
+      $12.pressure = $13;
+      write eventOut $12;
+      branch @ifend_0;
+    @ifnot_5:
+      branch_if equals ($messageType, 224) ? @if_6 : @ifend_0;
+    @if_6:
+      $14 = soul::note_events::PitchBend {};
+      $14.channel = cast int32 ($channel);
+      let $15 = call translateBendSemitones (cast int32 ($messageByte3), cast int32 ($messageByte2));
+      $14.bendSemitones = $15;
+      write eventOut $14;
+      branch @ifend_0;
+    @ifend_0:
+      return;
+  }
+
+  function normaliseValue (int32 $i) -> float32
+  {
+    @block_0:
+      return multiply (cast float32 ($i), 0.007874016f);
+  }
+
+  function translateBendSemitones (int32 $msb, int32 $lsb) -> float32
+  {
+    @block_0:
+      let $value = cast int32 (add (multiply ($msb, 128), $lsb));
+      return divide (cast float32 (subtract ($value, 8192)), 170.66667f);
+  }
+
+}
+
+namespace _root::soul::note_events
+{
+
+  struct NoteOn
+  {
+    int32    channel;
+    float32  note;
+    float32  velocity;
+  }
+
+  struct NoteOff
+  {
+    int32    channel;
+    float32  note;
+    float32  velocity;
+  }
+
+  struct PitchBend
+  {
+    int32    channel;
+    float32  bendSemitones;
+  }
+
+  struct Pressure
+  {
+    int32    channel;
+    float32  pressure;
+  }
+
+  struct Slide
+  {
+    int32    channel;
+    float32  slide;
+  }
+
+  struct Control
+  {
+    int32    channel;
+    int32    control;
+    float32  value;
+  }
+
+}
+
+namespace _root::soul::voice_allocators
+{
+
+}
+
+namespace _root::soul::DFT
+{
+
+}
+
+namespace _root::soul::mixers
+{
+
+}
+
+namespace _root::soul::gain
+{
+
+}
+
+namespace _root::soul::envelope
+{
+
+}
+
+namespace _root::soul::random
+{
+
+  struct RandomNumberState
+  {
+    int64  seed;
+  }
+
+  function reset (RandomNumberState& $state, int64 $seed) -> void
+  {
+    @block_0:
+      $state.seed = $seed;
+      return;
+  }
+
+  function getNextInt32 (RandomNumberState& $state) -> int32
+  {
+    @block_0:
+      let $s = cast int64 (modulo (multiply ($state.seed, 48271L), 2147483647L));
+      $state.seed = cast int64 (add ($s, 1L));
+      return cast int32 ($s);
+  }
+
+  function getNextUnipolar (RandomNumberState& $state) -> float32
+  {
+    @block_0:
+      let $0 = call getNextInt32 ($state);
+      return multiply (cast float32 ($0), 4.656613e-10f);
+  }
+
+  function getNextBipolar (RandomNumberState& $state) -> float32
+  {
+    @block_0:
+      let $0 = call getNextInt32 ($state);
+      return subtract (multiply (cast float32 ($0), 9.313226e-10f), 1.0f);
+  }
+
+}
+
+namespace _root::soul::noise
+{
+
+}
+
+processor _root::soul::noise::White
+{
+  output  out                 stream  float32;
+
+  function run() -> void
+  {
+    @block_0:
+      $0 = soul::random::RandomNumberState {};
+      $0.seed = cast int64 (add (processor.id, 10));
+      $rng = $0;
+      branch @body_0;
+    @body_0:
+      let $1 = call _root::soul::random::getNextBipolar ($rng);
+      write out $1;
+      advance;
+      branch @body_0;
+  }
+
+}
+
+processor _root::soul::noise::Brown
+{
+  output  out                 stream  float32;
+
+  function run() -> void
+  {
+    @block_0:
+      $runningTotal = 0.0f;
+      $0 = soul::random::RandomNumberState {};
+      $0.seed = cast int64 (add (processor.id, 20));
+      $rng = $0;
+      branch @body_0;
+    @body_0:
+      let $1 = call _root::soul::random::getNextBipolar ($rng);
+      let $white = cast float32 ($1);
+      $runningTotal = add ($runningTotal, cast float32 ($white));
+      branch_if greaterThan ($runningTotal, 32.0f) ? @ternary_true_1 : @ternary_false_1;
+    @ternary_true_1:
+      let $2 = bool true;
+      branch @ternary_end_1 ($2);
+    @ternary_false_1:
+      let $3 = lessThan ($runningTotal, -32.0f);
+      branch @ternary_end_1 ($3);
+    @ternary_end_1 (bool $_T1):
+      let $4 = $_T1;
+      branch_if $4 ? @if_0 : @ifnot_0;
+    @if_0:
+      $runningTotal = subtract ($runningTotal, cast float32 ($white));
+      branch @ifnot_0;
+    @ifnot_0:
+      $runningTotal = multiply ($runningTotal, 0.998f);
+      write out multiply ($runningTotal, 0.03125f);
+      advance;
+      branch @body_0;
+  }
+
+}
+
+processor _root::soul::noise::Pink
+{
+  output  out                 stream  float32;
+
+  function run() -> void
+  {
+    @block_0:
+      $counter = 0;
+      $values = float32[12] {};
+      $total = 0.0f;
+      $0 = soul::random::RandomNumberState {};
+      $0.seed = cast int64 (add (processor.id, 30));
+      $rng = $0;
+      branch @body_0;
+    @body_0:
+      let $1 = call _root::soul::random::getNextBipolar ($rng);
+      let $white = cast float32 ($1);
+      let $2 = $counter;
+      $counter = add ($2, 1);
+      $bit = 0;
+      branch @loop_1;
+    @loop_1:
+      branch_if lessThan ($bit, 12) ? @body_1 : @break_1;
+    @body_1:
+      branch_if notEquals (bitwiseAnd (rightShift ($counter, $bit), 1), 0) ? @if_0 : @cont_1;
+    @if_0:
+      let $index = cast wrap<12> (cast wrap<12> ($bit));
+      $total = subtract ($total, $values[$index]);
+      $values[$index] = cast float32 ($white);
+      $total = add ($total, cast float32 ($white));
+      branch @break_1;
+    @cont_1:
+      let $3 = $bit;
+      $bit = add ($3, 1);
+      branch @loop_1;
+    @break_1:
+      write out multiply ($total, 0.09090909f);
+      advance;
+      branch @body_0;
+  }
+
+}
+
+namespace _root::soul::timeline
+{
+
+  struct TimeSignature
+  {
+    int32  numerator;
+    int32  denominator;
+  }
+
+  struct Tempo
+  {
+    float32  bpm;
+  }
+
+  struct TransportState
+  {
+    int32  state;
+  }
+
+  struct Position
+  {
+    int64    currentFrame;
+    float64  currentQuarterNote;
+    float64  lastBarStartQuarterNote;
+  }
+
+  function quarterNotesPerBeat (TimeSignature $timeSig) -> float32
+  {
+    @block_0:
+      return divide (4.0f, cast float32 ($timeSig.denominator));
+  }
+
+  function beatsPerQuarterNote (TimeSignature $timeSig) -> float32
+  {
+    @block_0:
+      return divide (cast float32 ($timeSig.denominator), 4.0f);
+  }
+
+  function secondsPerBeat (Tempo $tempo) -> float32
+  {
+    @block_0:
+      branch_if lessThanOrEqual ($tempo.bpm, 0.0f) ? @ternary_true_0 : @ternary_false_0;
+    @ternary_true_0:
+      let $0 = 0.0f;
+      branch @ternary_end_0 ($0);
+    @ternary_false_0:
+      let $1 = divide (60.0f, $tempo.bpm);
+      branch @ternary_end_0 ($1);
+    @ternary_end_0 (float32 $_T0):
+      let $2 = $_T0;
+      return $2;
+  }
+
+  function secondsPerQuarterNote (Tempo $tempo, TimeSignature $timeSig) -> float32
+  {
+    @block_0:
+      let $0 = call secondsPerBeat ($tempo);
+      let $1 = call beatsPerQuarterNote ($timeSig);
+      return multiply ($0, $1);
+  }
+
+  function framesPerBeat (Tempo $tempo, float64 $sampleRate) -> float64
+  {
+    @block_0:
+      let $0 = call secondsPerBeat ($tempo);
+      return multiply ($sampleRate, cast float64 ($0));
+  }
+
+  function framesPerQuarterNote (Tempo $tempo, TimeSignature $timeSig, float64 $sampleRate) -> float64
+  {
+    @block_0:
+      let $0 = call secondsPerQuarterNote ($tempo, $timeSig);
+      return multiply ($sampleRate, cast float64 ($0));
+  }
+
+  function isStopped (TransportState $t) -> bool
+  {
+    @block_0:
+      return equals ($t.state, 0);
+  }
+
+  function isPlaying (TransportState $t) -> bool
+  {
+    @block_0:
+      return equals ($t.state, 1);
+  }
+
+  function isRecording (TransportState $t) -> bool
+  {
+    @block_0:
+      return equals ($t.state, 2);
+  }
+
+}
+
+namespace _root::soul::complex_lib
+{
+
+}
+

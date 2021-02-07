@@ -27,7 +27,6 @@ processor ClassicRingtone
         let noteFrequency  = soul::noteNumberToFrequency (pitch);
         let noteLength     = samplesPerQuarterNote * lengthInQuarterNotes;
         let phaseIncrement = float (noteFrequency * twoPi * processor.period);
-
         loop (noteLength)
         {
             out << 0.1f * sin (sinewavePhase);

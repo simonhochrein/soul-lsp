@@ -9,3 +9,5 @@ IF (WIN32)
 ENDIF()
 
 add_executable(soul-lsp source/main.cpp source/Server.cpp)
+
+add_executable(resolver source/resolver.cpp)
