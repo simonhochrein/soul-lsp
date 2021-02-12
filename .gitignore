@@ -1,2 +1,4 @@
 build
 vscode_plugin/node_modules
+/CMakeSettings.json
+/.vs

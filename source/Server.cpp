@@ -36,60 +36,11 @@ enum CompletionItemKind {
 	TypeParameter = 25
 };
 
- std::vector<std::string> keywords = {
-            "if",
-            "do",
-            "for",
-            "let",
-            "var",
-            "int",
-            "try",
-            "else",
-            "bool",
-            "true",
-            "case",
-            "enum",
-            "loop",
-            "void",
-            "while",
-            "break",
-            "const",
-            "int32",
-            "int64",
-            "float",
-            "false",
-            "using",
-            "fixed",
-            "graph",
-            "input",
-            "event",
-            "class",
-            "catch",
-            "throw",
-            "output",
-            "return",
-            "string",
-            "struct",
-            "import",
-            "switch",
-            "public",
-            "double",
-            "private",
-            "float32",
-            "float64",
-            "default",
-            "complex",
-            "continue",
-            "external",
-            "operator",
-            "processor",
-            "namespace",
-            "complex32",
-            "complex64",
-            "connection"};
-
-
 std::map<std::string, ServerFile> fileMap;
+
+Server::Server() {
+    builtins = soul::SourceCodeUtilities::getCommonCodeCompletionStrings();
+}
 
 nlohmann::json makeLocation(int line, int character)
 {
@@ -177,7 +128,7 @@ void Server::close(std::string uri)
 
 nlohmann::json Server::completion() {
         nlohmann::json arr = {};
-        for (auto keyword : keywords)
+        for (auto keyword : builtins)
         {
             arr.push_back(
                 {
